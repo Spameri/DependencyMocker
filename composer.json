@@ -1,0 +1,31 @@
+{
+    "name": "spamer/dependency-mocker",
+    "type": "library",
+    "description": "Loads dependencies to mocked classes by Mockery for Nette Framework.",
+    "keywords": ["nette", "mockery", "dependency"],
+    "homepage": "https://github.com/VBoss/DependencyMocker",
+    "license": ["BSD-3-Clause", "GPL-2.0", "GPL-3.0"],
+    "authors": [
+        {
+          "name": "Václav Čevela",
+          "homepage": "https://github.com/VBoss/"
+        }
+    ],
+    "require": {
+        "mockery/mockery": "0.9.*",
+        "nette/di": "2.3.*"
+    },
+    "require-dev": {
+        "nette/tester": "~1.6"
+    },
+    "autoload": {
+        "classmap": [
+            "src/"
+        ]
+    },
+    "autoload-dev": {
+        "classmap": [
+            "tests/"
+        ]
+    }
+}
