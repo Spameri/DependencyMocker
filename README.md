@@ -35,7 +35,7 @@ Accessing dependencies of BasePresenter and setting up Mockery logic.
 Spamer\DependencyMocker\Mocker::getProperty(
 	App\BasePresenter::class, 
 	'articleModel', 
-	$this->articleModel
+	$basePresenter
 )
 	->shouldReceive('save')->once();
 ```
