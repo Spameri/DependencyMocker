@@ -1,5 +1,5 @@
 {
-    "name": "spamer/dependency-mocker",
+    "name": "spameri/dependency-mocker",
     "type": "library",
     "description": "Loads dependencies to mocked classes by Mockery for Nette Framework.",
     "keywords": ["nette", "mockery", "dependency"],
