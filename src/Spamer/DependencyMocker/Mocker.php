@@ -72,7 +72,9 @@ class Mocker
 	 */
 	private static function mockConstructorDependencies($className)
 	{
-		self::mockDependenciesFromMethod($className, '__construct');
+		if (method_exists($className, '__construct')) {
+			self::mockDependenciesFromMethod($className, '__construct');
+		}
 	}
 
 
