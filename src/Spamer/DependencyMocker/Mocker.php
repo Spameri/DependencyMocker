@@ -133,4 +133,22 @@ class Mocker
 		$property->setAccessible(TRUE);
 		return $property->getValue($object);
 	}
+
+
+	/**
+	 * Calls private method and returns result.
+	 *
+	 * @param object $object
+	 * @param string $method
+	 * @param array $arguments
+	 * @return mixed
+	 */
+	public static function callPrivateFunction($object, $method, $arguments = [])
+	{
+		$reflectionClass = new \ReflectionClass($object);
+		$reflectionMethod = $reflectionClass->getMethod($method);
+		$reflectionMethod->setAccessible(TRUE);
+
+		return $reflectionMethod->invokeArgs($object, $arguments);
+	}
 }
