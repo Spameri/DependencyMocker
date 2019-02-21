@@ -1,6 +1,8 @@
 # DependencyMocker
 Loads dependencies to mocked classes by Mockery for Nette Framework.
 
+![](https://travis-ci.org/Spameri/DependencyMocker.svg?branch=master "Travis")
+
 ## Usage
 
 ### Set up
