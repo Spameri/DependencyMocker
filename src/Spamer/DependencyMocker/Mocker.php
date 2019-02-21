@@ -8,7 +8,7 @@ use Mockery;
 class Mocker
 {
 	/** @var array */
-	public static $bannedClasses;
+	public static $bannedClasses = [];
 
 	/** @var \ReflectionClass */
 	private static $reflectedClass;
