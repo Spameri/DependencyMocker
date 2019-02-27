@@ -1,29 +1,32 @@
-<?php
+<?php declare(strict_types = 1);
 
 namespace Spamer\DependencyMocker;
 
-use Nette;
-use Mockery;
 
 class Mocker
 {
-	/** @var array */
+	/**
+	 * @var array
+	 */
 	public static $bannedClasses = [];
 
-	/** @var \ReflectionClass */
+	/**
+	 * @var \ReflectionClass
+	 */
 	private static $reflectedClass;
 
-	/** @var Mockery\Mock */
+	/**
+	 * @var \Mockery\Mock
+	 */
 	private static $mockedClass;
 
-	/**
-	 * @param string $className
-	 * @return \ReflectionClass|\stdClass
-	 */
-	public static function mockClassDependencies($className)
+
+	public static function mockClassDependencies(
+		string $className
+	) : \Mockery\MockInterface
 	{
 		self::$reflectedClass = new \ReflectionClass($className);
-		self::$mockedClass = Mockery::mock($className);
+		self::$mockedClass = \Mockery::mock($className);
 
 		self::mockInjectedMethods($className);
 		self::mockInjectedProperties();
@@ -33,32 +36,31 @@ class Mocker
 	}
 
 
-	/**
-	 * @param string $className
-	 */
-	private static function mockInjectedMethods($className)
+	private static function mockInjectedMethods(
+		string $className
+	) : void
 	{
 		foreach (self::$reflectedClass->getMethods() as $method) {
-			if (substr($method->getName(), 0, 6) === 'inject') {
+			if (\strpos($method->getName(), 'inject') === 0) {
 				self::mockDependenciesFromMethod($className, $method->getName());
 			}
 		}
 	}
 
 
-	private static function mockInjectedProperties()
+	private static function mockInjectedProperties() : void
 	{
 		/** @var \ReflectionProperty $property */
 		foreach (self::$reflectedClass->getProperties() as $property) {
 			if (
-				Nette\DI\PhpReflection::parseAnnotation($property, 'inject') !== NULL
+				ReflectionHelper::parseAnnotation($property, 'inject') !== NULL
 				||
-				Nette\DI\PhpReflection::parseAnnotation($property, 'autowire') !== NULL
+				ReflectionHelper::parseAnnotation($property, 'autowire') !== NULL
 			) {
-				if ($mockedParameterClass = Nette\DI\PhpReflection::parseAnnotation($property, 'var')) {
-					$mockedParameterClass = Nette\DI\PhpReflection::expandClassName(
+				if ($mockedParameterClass = ReflectionHelper::parseAnnotation($property, 'var')) {
+					$mockedParameterClass = ReflectionHelper::expandClassName(
 						$mockedParameterClass,
-						Nette\DI\PhpReflection::getDeclaringClass($property)
+						ReflectionHelper::getDeclaringClass($property)
 					);
 				}
 				self::setProperty($mockedParameterClass, $property);
@@ -67,10 +69,7 @@ class Mocker
 	}
 
 
-	/**
-	 * @param string $className
-	 */
-	private static function mockConstructorDependencies($className)
+	private static function mockConstructorDependencies(string $className) : void
 	{
 		if (method_exists($className, '__construct')) {
 			self::mockDependenciesFromMethod($className, '__construct');
@@ -78,11 +77,10 @@ class Mocker
 	}
 
 
-	/**
-	 * @param string $className
-	 * @param string $methodName
-	 */
-	private static function mockDependenciesFromMethod($className, $methodName)
+	private static function mockDependenciesFromMethod(
+		string $className,
+		string $methodName
+	) : void
 	{
 		$reflectionMethod = new \ReflectionMethod($className, $methodName);
 		$parameters = $reflectionMethod->getParameters();
@@ -97,10 +95,9 @@ class Mocker
 	}
 
 
-	/**
-	 * @param array $bannedClasses
-	 */
-	public static function setBannedClasses($bannedClasses)
+	public static function setBannedClasses(
+		array $bannedClasses
+	) : void
 	{
 		self::$bannedClasses = $bannedClasses;
 	}
@@ -109,11 +106,18 @@ class Mocker
 	/**
 	 * @param string $className
 	 * @param \ReflectionParameter|\ReflectionProperty $class
+	 * @throws \ReflectionException
 	 */
-	private static function setProperty($className, $class)
+	private static function setProperty(
+		string $className,
+		$class
+	) : void
 	{
-		if ( ! in_array($className, self::$bannedClasses) && $class->getDeclaringClass()->hasProperty($class->getName())) {
-			$mockedParameter = Mockery::mock($className);
+		if (
+			! in_array($className, self::$bannedClasses, TRUE)
+			&& $class->getDeclaringClass()->hasProperty($class->getName())
+		) {
+			$mockedParameter = \Mockery::mock($className);
 			$property = new \ReflectionProperty($class->getDeclaringClass()->getName(), $class->getName());
 			$property->setAccessible(TRUE);
 			$property->setValue(self::$mockedClass, $mockedParameter);
@@ -126,6 +130,7 @@ class Mocker
 	 * @param string $property
 	 * @param object $object
 	 * @return mixed
+	 * @throws \ReflectionException
 	 */
 	public static function getProperty($class, $property, $object)
 	{
@@ -142,6 +147,7 @@ class Mocker
 	 * @param string $method
 	 * @param array $arguments
 	 * @return mixed
+	 * @throws \ReflectionException
 	 */
 	public static function callPrivateFunction($object, $method, $arguments = [])
 	{
