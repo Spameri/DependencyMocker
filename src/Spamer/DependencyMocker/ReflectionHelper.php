@@ -23,13 +23,13 @@ class ReflectionHelper
 	public static function parseAnnotation(
 		\ReflectionProperty $ref,
 		string $name
-	) : string
+	) : ?string
 	{
 		if (preg_match("#[\\s*]@$name(?:\\s++([^@]\\S*)?|$)#", trim($ref->getDocComment(), '/*'), $m)) {
-			return $m[1] ?? '';
+			return $m[1] ?? NULL;
 		}
 
-		return '';
+		return NULL;
 	}
 
 
