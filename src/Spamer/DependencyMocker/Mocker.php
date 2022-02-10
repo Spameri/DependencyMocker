@@ -87,9 +87,9 @@ class Mocker
 
 		/** @var \ReflectionParameter $parameter */
 		foreach ($parameters as $parameter) {
-			if ($parameter->getClass()) {
-				$parameterClass = $parameter->getClass()->getName();
-				self::setProperty($parameterClass, $parameter);
+			if ($parameter->getType() && !$parameter->getType()->isBuiltin()) {
+				$name = $parameter->getType()->getName();
+				self::setProperty($name, $parameter);
 			}
 		}
 	}
